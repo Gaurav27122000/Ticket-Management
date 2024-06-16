@@ -52,3 +52,12 @@ class Ticket(Base):
     status = Column(Enum(StatusEnum), default=StatusEnum.unassigned)
 
     owner_id = Column(Integer, ForeignKey('users.id'))
+
+
+class Chat(Base):
+    __tablename__ = 'messages'
+    id = Column(Integer, primary_key=True, index=True)
+    message = Column(String)
+    username = Column(String)
+
+    ticket_id = Column(Integer, ForeignKey('Tickets.id'))
