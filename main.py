@@ -25,7 +25,3 @@ app.include_router(ticket.router)
 app.include_router(auth.router)
 app.include_router(chat.router)
 
-
-@app.get("/")
-async def first_api():
-    return {"message": "Welcome to CRM Builder. Check /docs for more information."}
