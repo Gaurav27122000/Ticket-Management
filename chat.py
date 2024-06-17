@@ -35,7 +35,7 @@ async def check_permission(user:user_dependency,db: db_dependency,ticket_id: int
     if user is None: raise HTTPException(status_code=401, detail="User not found")
 
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
-    if ticket is None or (user.get('role')!="admin" and ticket.owner_id != user.get('id')):
+    if ticket is None or (user.get('user_role')!="admin" and ticket.owner_id != user.get('id')):
         return False
     return True
 

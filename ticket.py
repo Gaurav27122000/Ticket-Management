@@ -43,7 +43,7 @@ class TicketStatus(BaseModel):
 
 @router.get("/getTickets")
 async def get_all(user: user_dependency,db: db_dependency):
-    if(user.get('role')=='user'):
+    if(user.get('user_role')=='user'):
         return db.query(Ticket).filter(Ticket.owner_id == user.get('id')).all()
     else:
         return db.query(Ticket).all()
