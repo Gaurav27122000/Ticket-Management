@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, Path, status
@@ -51,7 +52,7 @@ async def get_chat(user:user_dependency,db: db_dependency, ticket_id: int = Path
 @router.post("/addMessage", status_code=status.HTTP_201_CREATED)
 async def add_chat(user: user_dependency, db: db_dependency, chat_request: ChatRequest):
     if(await check_permission(user,db,chat_request.ticket_id)):
-        chat_model = Chat(**chat_request.dict(), username=user.get('username'))
+        chat_model = Chat(**chat_request.dict(),timestamp=datetime.now(), sender=user.get('user_role'))
         db.add(chat_model)
         db.commit()
 

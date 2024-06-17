@@ -58,6 +58,7 @@ class Chat(Base):
     __tablename__ = 'messages'
     id = Column(Integer, primary_key=True, index=True)
     message = Column(String)
-    username = Column(String)
+    sender = Column(String)
+    timestamp = Column(DateTime)
 
     ticket_id = Column(Integer, ForeignKey('Tickets.id'))
