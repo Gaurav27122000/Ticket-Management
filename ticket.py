@@ -79,6 +79,7 @@ async def update_status(db: db_dependency, ticket_id: int = Path(gt=0)):
     ticket = db.query(Ticket).filter(Ticket.id == ticket_id).first()
     if ticket is not None:
         db.query(Ticket).filter(Ticket.id == ticket_id).delete()
+        db.commit
 
     else:
         raise HTTPException(status_code=404, detail="Ticket not found")
