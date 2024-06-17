@@ -9,10 +9,7 @@ from database import engine
 
 app = FastAPI()
 
-origins = [
-    "http://localhost:3000",
-    "http://localhost",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
@@ -27,3 +24,7 @@ models.Base.metadata.create_all(bind=engine)
 app.include_router(ticket.router)
 app.include_router(auth.router)
 app.include_router(chat.router)
+
+@app.get("/")
+async def first_api():
+    return {"message":"Welcome to CRM Builder"}
