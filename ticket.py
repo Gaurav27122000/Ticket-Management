@@ -1,6 +1,6 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Path, status
+from fastapi import APIRouter, Depends, HTTPException, Path, status, Response
 from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from sqlalchemy.testing.pickleable import User
@@ -40,13 +40,15 @@ class TicketRequest(BaseModel):
 class TicketStatus(BaseModel):
     status: StatusEnum
 
-
-@router.get("/getTickets")
-async def get_all(user: user_dependency,db: db_dependency):
-    if(user.get('user_role')=='user'):
+async def get_tickets(db:db_dependency,role:str):
+    if (role == 'user'):
         return db.query(Ticket).filter(Ticket.owner_id == user.get('id')).all()
     else:
         return db.query(Ticket).all()
+
+@router.get("/getTickets")
+async def get_all(user: user_dependency, db: db_dependency):
+    return await get_tickets(db,user.get('user_role'))
 
 
 @router.get("/getTicket/{ticket_id}", status_code=200)
@@ -59,11 +61,12 @@ async def get_ticket_by_id(db: db_dependency, ticket_id: int = Path(gt=0)):
 
 
 @router.post("/addTicket", status_code=status.HTTP_201_CREATED)
-async def add_ticket(user: user_dependency, db: db_dependency,ticket: TicketRequest):
-    if(user is None):   raise HTTPException(status_code=401, detail="User not found")
+async def add_ticket(user: user_dependency, db: db_dependency, ticket: TicketRequest):
+    if (user is None):   raise HTTPException(status_code=401, detail="User not found")
     ticket_model = Ticket(**ticket.dict(), owner_id=user.get('id'))
     db.add(ticket_model)
     db.commit()
+    return await get_tickets(db, user.get('user_role'))
 
 
 @router.put("/updateTicket/{ticket_id}", status_code=status.HTTP_200_OK)
@@ -72,7 +75,6 @@ async def update_status(db: db_dependency, ticket_status: TicketStatus, ticket_i
     if ticket is not None:
         ticket.status = ticket_status.status
         db.commit()
-
     else:
         raise HTTPException(status_code=404, detail="Ticket not found")
 
